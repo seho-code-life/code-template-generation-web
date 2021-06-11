@@ -1,8 +1,10 @@
 {
   "name": "code-template-generation-web",
-  "version": "0.0.1-alpha.9",
+  "version": "0.0.1-alpha.10",
   "scripts": {
-    "serve": "vue-cli-service serve & node src/server/app.js",
+    "dev": "vue-cli-service serve --open --port",
+    "service:dev": "nodemon",
+    "serve": "vue-cli-service serve --open & node src/server/app.js",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -20,7 +22,9 @@
     "@vue/eslint-config-typescript": "^7.0.0",
     "ant-design-vue": "^2.2.0-beta.2",
     "axios": "^0.21.1",
+    "chalk": "^4.1.1",
     "commander": "^7.2.0",
+    "cross-env": "^7.0.3",
     "cross-spawn": "^7.0.3",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0",

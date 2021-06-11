@@ -3,7 +3,7 @@ const commonController = require("../controllers/common");
 const commonRouter = new Router();
 
 
-commonRouter.get("/getCurrentProject", commonController.getCurrentProject);
+commonRouter.get("/getCurrentProjectUrl", commonController.getCurrentProjectUrl);
 
 // 导出
 module.exports = commonRouter;
