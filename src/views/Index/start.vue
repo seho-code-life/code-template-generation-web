@@ -162,6 +162,7 @@ const handleAddApi = async () => {
         if(addResult.success){
           message.success(`${moduleName}-API添加成功!`);
           startConfigModel.value = false;
+          form.moduleName = "";
         }
       }
     }
