@@ -4,7 +4,7 @@ const router = require("./router");
 const app = new Koa();
 const chalk = require("chalk");
 // 通过参数获取到运行端口
-let { PORT: port } = process.env;
+let { servicePort: port } = process.env;
 // 使用路由
 app.use(router.routes()).use(router.allowedMethods());
 app.use(bodyParser());
@@ -20,7 +20,7 @@ function handleListenCallback() {
   console.log(chalk.green("代码生成工具前端GUI服务开启中..."));
 }
 app
-  .listen(port, () => handleListenCallback)
+  .listen(port, handleListenCallback)
   .on("error", (error) => {
     if (error.message.indexOf("address already in use")) {
       // 端口+1，重新listen

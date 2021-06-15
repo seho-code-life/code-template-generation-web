@@ -8,6 +8,10 @@ const chalk = require("chalk");
 const error = chalk.bold.red;
 const warning = chalk.keyword("orange");
 const child_process = require("child_process");
+// 执行命令的设置
+const execOption = {
+  cwd: __dirname,
+};
 
 // 输入-v， --version查看当前工具的版本
 program
@@ -18,9 +22,40 @@ program
 
 program.parse(process.argv);
 const { servicePort, clientPort } = program.opts();
+
+// 开启后端服务
+const handleStartService = () => {
+  // 设置后端服务端口
+  process.env.servicePort = servicePort;
+  const serviceProcess = child_process.exec(
+    `npm run service:production`,
+    execOption
+  );
+  serviceProcess.stdout.on("data", function(data) {
+    console.warn(data);
+  });
+  serviceProcess.stderr.on("data", function(data) {
+    error(data);
+  });
+};
+
+// 开启前端GUI服务
+const handleStartClient = () => {
+  console.log(chalk.blue("项目根目录为:", process.cwd()));
+  const clientProcess = child_process.exec(
+    `npm run dev -- --port ${clientPort}`,
+    execOption
+  );
+  clientProcess.stdout.on("data", function(data) {
+    console.warn(data);
+  });
+  clientProcess.stderr.on("data", function(data) {
+    error(data);
+  });
+};
 // 解构option数据
 program
-  .command("serve")
+  .command("start")
   .description("开启代码生成在线服务")
   .action(() => {
     console.log(
@@ -31,17 +66,17 @@ program
       如果不是最新版本，立即前往 https://npm.registry.xian.develop.zhigui.com/-/web/detail/code-template-generation-web 进行更新
     `)
     );
-    // 执行命令的设置
-    const execOption = {
-      cwd: __dirname,
-    }
-    console.log(chalk.blue("项目根目录为:", process.cwd()));
-    const clientProcess = child_process.exec(`npm run dev -- --port ${clientPort}`, execOption);
-    const serviceProcess = child_process.exec(`cross-env PORT=${servicePort} node src/server/app.js}`, execOption);
-    clientProcess.stdout.on("data", function(data) {console.warn(data);});
-    clientProcess.stderr.on("data", function(data) {error(data)});
-    serviceProcess.stdout.on("data", function(data) {console.warn(data);});
-    serviceProcess.stderr.on("data", function(data) {error(data)});
+    handleStartClient(); // 开启前端服务
+    handleStartService(); // 开启后端服务
   });
+
+program
+  .command("service")
+  .description("仅开启代码生成服务的后端【仅开发调试使用】")
+  .action(handleStartService);
+program
+  .command("client")
+  .description("仅开启代码生成服务的前端【仅开发调试使用】")
+  .action(handleStartClient);
 
 program.parse(process.argv);
