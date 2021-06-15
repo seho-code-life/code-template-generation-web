@@ -1,13 +1,16 @@
 const Koa = require("koa");
 const bodyParser = require("koa-bodyparser");
+const cors = require('@koa/cors')
 const router = require("./router");
 const app = new Koa();
 const chalk = require("chalk");
 // 通过参数获取到运行端口
-let { servicePort: port } = process.env;
+let { servicePort: port = 8899 } = process.env;
+// 开启cors
+app.use(cors());
+app.use(bodyParser());
 // 使用路由
 app.use(router.routes()).use(router.allowedMethods());
-app.use(bodyParser());
 
 app.on("error", function(err, ctx) {
   console.log("server error", err);

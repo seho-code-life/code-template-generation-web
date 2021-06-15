@@ -12,7 +12,9 @@ const child_process = require("child_process");
 const execOption = {
   cwd: __dirname,
 };
-
+// 项目根目录
+const projectPath = process.cwd();
+console.log(projectPath)
 // 输入-v， --version查看当前工具的版本
 program
   .version(version, "-v, --version")
@@ -22,7 +24,6 @@ program
 
 program.parse(process.argv);
 const { servicePort, clientPort } = program.opts();
-
 // 开启后端服务
 const handleStartService = () => {
   // 设置后端服务端口
@@ -41,7 +42,6 @@ const handleStartService = () => {
 
 // 开启前端GUI服务
 const handleStartClient = () => {
-  console.log(chalk.blue("项目根目录为:", process.cwd()));
   const clientProcess = child_process.exec(
     `npm run dev -- --port ${clientPort}`,
     execOption
@@ -66,6 +66,9 @@ program
       如果不是最新版本，立即前往 https://npm.registry.xian.develop.zhigui.com/-/web/detail/code-template-generation-web 进行更新
     `)
     );
+    console.log(chalk.blue("项目根目录为:", projectPath));
+    // 将项目启动的根目录存储
+    process.env.projectPath = projectPath;
     handleStartClient(); // 开启前端服务
     handleStartService(); // 开启后端服务
   });

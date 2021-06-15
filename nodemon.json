@@ -1,6 +1,6 @@
 {
     "watch": ["src/server"],
     "ext": "ts,js",
-    "exec": "cross-env PORT=8899 node src/server/app.js",
+    "exec": "node src/server/app.js",
     "legacyWatch": true
   }
