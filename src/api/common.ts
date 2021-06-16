@@ -7,7 +7,7 @@ import request from "@/common/request";
 export async function getCurrentProjectInfo(): Promise<ActionResult> {
   return new Promise((resolve) => {
     request({
-      url: "common/getCurrentProjectInfo",
+      url: "/common/getCurrentProjectInfo",
     }).then((res) => {
       resolve(res);
     });
@@ -20,7 +20,7 @@ export async function checkFileExists(params: {
   return new Promise((resolve) => {
     request({
       method: "post",
-      url: "common/checkFileExists",
+      url: "/common/checkFileExists",
       data: {
         filePath: params.filePath
       }

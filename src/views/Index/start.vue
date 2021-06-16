@@ -44,7 +44,7 @@
         <FormItem label="模块名称(英文)">
           <Input
             v-model:value="form.moduleName"
-            placeholder="举例: user,product,question,list等等"
+            placeholder="举例: users,products,questions等等,请添加复数(s)"
           ></Input>
         </FormItem>
         <FormItem label="选择功能">
@@ -88,10 +88,13 @@ import {
 } from "ant-design-vue";
 import { getApiList, addApi } from "../../api/api";
 import { checkFileExists } from "../../api/common";
+import testApi from "../../api/test";
 interface FormConfig {
   moduleName: string;
+  generateType: "class" | "function";
   moduleCN?: string;
   urlPrefix?: string;
+  version: string;
   checkFeatures: string[];
 }
 const { Item: ListItem } = List;
@@ -106,10 +109,17 @@ const startConfigModel = ref(false);
 // 新建API的form
 const form: UnwrapRef<FormConfig> = reactive({
   moduleName: "",
-  moduleCN: "",
-  urlPrefix: "",
+  version: "v1",
+  generateType: "class",
   checkFeatures: ["create", "delete", "update", "read"],
 });
+
+
+const t = new testApi();
+console.log(t.create().then(res => {
+  console.log(res);
+}))
+
 // 功能
 const features = ref<Array<any>>([
   {

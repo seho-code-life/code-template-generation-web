@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { message } from 'ant-design-vue';
 
 // 定义工具后端地址
-const baseUrl = `http://localhost:${process.env.servicePort || 8899}/`;
+const baseUrl = `http://localhost:${process.env.servicePort || 8899}`;
 export default (params: AxiosRequestConfig): Promise<ActionResult> => {
   const data: ActionResult = {
     success: false,

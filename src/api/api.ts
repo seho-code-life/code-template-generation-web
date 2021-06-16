@@ -8,7 +8,7 @@ import request from "@/common/request";
 export async function getApiList(): Promise<ActionResult> {
   return new Promise((resolve) => {
     request({
-      url: "api/getApiList",
+      url: "/api/getApiList",
     }).then((res) => {
       resolve(res);
     });
@@ -25,7 +25,7 @@ export async function addApi(params: {
 }): Promise<ActionResult> {
   return new Promise((resolve) => {
     request({
-      url: "api/addApi",
+      url: "/api/addApi",
       method: "POST",
       data: {
         moduleName: params.moduleName

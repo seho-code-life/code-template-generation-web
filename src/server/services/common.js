@@ -11,7 +11,6 @@ module.exports = {
     };
     // 读取信息
     const data = fs.readdirSync(projectPath, "utf-8");
-    console.log(data)
     // 判断data中是否有package.json
     if (data.includes("package.json")) {
       // 读取package.json中的内容
@@ -23,7 +22,6 @@ module.exports = {
   },
   checkFileExists: async (params) => {
     const { filePath } = params;
-    console.log("进入如u uuu", projectPath + filePath)
     return fs.existsSync(projectPath + filePath);
   }
 };

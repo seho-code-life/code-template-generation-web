@@ -1,0 +1,12 @@
+import BasicApi from "./basicApi";
+
+class <%= moduleName.capital %> extends BasicApi {
+  constructor() {
+    super({
+      version: "<%=version_%>",
+      moduleName: "<%= moduleName.lowerCase _%>"
+    });
+  }
+}
+
+export default <%= moduleName.capital _%>;
