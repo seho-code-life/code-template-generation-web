@@ -14,7 +14,7 @@ const execOption = {
 };
 // 项目根目录
 const projectPath = process.cwd();
-console.log(projectPath)
+console.log(projectPath);
 // 输入-v， --version查看当前工具的版本
 program
   .version(version, "-v, --version")
@@ -72,7 +72,10 @@ program
     handleStartClient(); // 开启前端服务
     handleStartService(); // 开启后端服务
   });
-
+program
+  .command("create")
+  .description("初始化项目")
+  .action(() => require("./create"));
 program
   .command("service")
   .description("仅开启代码生成服务的后端【仅开发调试使用】")
