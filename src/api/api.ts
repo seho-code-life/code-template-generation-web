@@ -21,14 +21,17 @@ export async function getApiList(): Promise<ActionResult> {
  * @returns 
  */
 export async function addApi(params: {
-  moduleName: string
+  moduleName: string,
+  generateType: string,
+  version: string,
+  checkFeatures?: string[]
 }): Promise<ActionResult> {
   return new Promise((resolve) => {
     request({
       url: "/api/addApi",
       method: "POST",
       data: {
-        moduleName: params.moduleName
+        ...params
       }
     }).then((res) => {
       resolve(res);

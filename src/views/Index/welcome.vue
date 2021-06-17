@@ -4,10 +4,17 @@
       hello, this is code-template-generation-web for Ziggurat
     </div>
     <!-- 展示启动项目的根路径，根据接口返回pass与否，来展示 -->
-    <Empty
-      v-if="projectInfo.state !== 'pass'"
-      description="“该项目目录结构不合法，需要拥有一个package.json”"
-    ></Empty>
+    <template v-if="projectInfo.state !== 'pass'">
+      <Empty
+        style="margin-top: 20px"
+        description="该项目目录结构不合法，需要拥有一个package.json"
+      ></Empty>
+      <div style="text-align: center">
+        <Divider>如何解决?</Divider>
+        <TypographyText secondary>进入需要配置的项目的命令行之后再运行（根目录需要拥有package.json）</TypographyText>
+        <TypographyText code>seho start</TypographyText>
+      </div>
+    </template>
     <!-- 展示项目卡片 -->
     <Card v-else style="width: 40vw; margin: 35px auto">
       <p>项目路径: {{ projectInfo.path }}</p>
@@ -22,11 +29,12 @@
 
 <script lang="ts" setup>
 import { ref } from "@vue/reactivity";
-import { Empty, Card, Button } from "ant-design-vue";
+import { Empty, Card, Button, Typography, Divider } from "ant-design-vue";
 import { getCurrentProjectInfo } from "../../api/common";
 import { useRouter } from "vue-router";
 const projectInfo = ref<any>({});
 const router = useRouter();
+const { Text: TypographyText } = Typography;
 // 获取当前项目的信息
 const getInfo = async () => {
   const infoData = await getCurrentProjectInfo();

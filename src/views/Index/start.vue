@@ -10,6 +10,7 @@
           <p>
             只需要提供少许的字段，就能在对应目录下生成基本的CRUD代码，很建议用户使用与之配套的代码模板，这样工具可以少做一些步骤。
           </p>
+          <template #extra><a href="#"><Tooltip color="#2db7f5" title="自动生成类/函数风格的api管理器，结合预定义的模板，初始化app就已经具备了基本的CRUD的能力，开发者无须根据每个模块去写重复的CRUD代码。">这是什么?</Tooltip></a></template>
           <Button style="margin-right: 10px" @click="handleGetApiList"
             >查看已有的API</Button
           >
@@ -36,18 +37,35 @@
         type="warning"
       ></Alert>
       <Form
+        ref="apiListForm"
+        :rules="apiListFormRule"
         style="margin-top: 20px"
         :model="form"
         :labelCol="{ span: 8 }"
         :wrapperCol="{ span: 14 }"
       >
-        <FormItem label="模块名称(英文)">
+        <FormItem name="moduleName" label="模块名称(英文)">
           <Input
             v-model:value="form.moduleName"
             placeholder="举例: users,products,questions等等,请添加复数(s)"
           ></Input>
         </FormItem>
-        <FormItem label="选择功能">
+        <FormItem name="version" label="API版本(v*)">
+          <Input
+            v-model:value="form.version"
+            placeholder="举例: v1, v2, 版本信息将会拼接到请求路径之前"
+          ></Input>
+        </FormItem>
+        <FormItem name="generateType" label="生成方式">
+          <Select
+            v-model:value="form.generateType"
+            placeholder="请选择生成的方式"
+          >
+            <SelectOption value="class">class万岁</SelectOption>
+            <SelectOption value="function">function也可</SelectOption>
+          </Select>
+        </FormItem>
+        <FormItem label="选择功能" v-if="form.generateType === 'function'">
           <CheckboxGroup v-model:value="form.checkFeatures">
             <Checkbox
               :value="item.type"
@@ -60,7 +78,7 @@
           </CheckboxGroup>
         </FormItem>
         <FormItem :wrapper-col="{ span: 14, offset: 9 }">
-          <Button>取消</Button>
+          <Button @click="startConfigModel = false;">取消</Button>
           <Button @click="handleAddApi" style="margin-left: 10px" type="primary"
             >完成</Button
           >
@@ -84,22 +102,23 @@ import {
   Form,
   Checkbox,
   Alert,
+  Select,
+  Tooltip,
   message,
 } from "ant-design-vue";
 import { getApiList, addApi } from "../../api/api";
 import { checkFileExists } from "../../api/common";
-import testApi from "../../api/test";
 interface FormConfig {
   moduleName: string;
   generateType: "class" | "function";
   moduleCN?: string;
-  urlPrefix?: string;
   version: string;
   checkFeatures: string[];
 }
 const { Item: ListItem } = List;
 const { Item: FormItem } = Form;
 const { Group: CheckboxGroup } = Checkbox;
+const { Option: SelectOption } = Select;
 const route = useRoute();
 const info = ref({});
 const apiList = ref([]);
@@ -113,12 +132,13 @@ const form: UnwrapRef<FormConfig> = reactive({
   generateType: "class",
   checkFeatures: ["create", "delete", "update", "read"],
 });
-
-
-const t = new testApi();
-console.log(t.create().then(res => {
-  console.log(res);
-}))
+// 添加api的form表单引用
+const apiListForm = ref();
+// api表单校验规则
+const apiListFormRule = {
+  moduleName: { required: true, message: "请输入模块名称", trigger: "blur" },
+  version: { required: true, message: "请输入版本信息", trigger: "blur" },
+};
 
 // 功能
 const features = ref<Array<any>>([
@@ -153,8 +173,8 @@ const handleGetApiList = async () => {
 };
 // 添加api
 const handleAddApi = async () => {
-  // 检查参数合法性
-  if (form.moduleName !== "") {
+  // 验证表单
+  apiListForm.value.validate().then(async () => {
     // 检查模块名是否存在，如果存在则提示
     const moduleName = form.moduleName.trim();
     const checkResult = await checkFileExists({
@@ -167,16 +187,19 @@ const handleAddApi = async () => {
       } else {
         // 添加
         const addResult = await addApi({
-          moduleName
+          moduleName,
+          version: form.version,
+          generateType: form.generateType,
+          checkFeatures: form.checkFeatures
         });
-        if(addResult.success){
+        if (addResult.success) {
           message.success(`${moduleName}-API添加成功!`);
           startConfigModel.value = false;
-          form.moduleName = "";
+          apiListForm.value.resetFields();
         }
       }
     }
-  }
+  });
 };
 </script>
 <style lang="scss" scoped>

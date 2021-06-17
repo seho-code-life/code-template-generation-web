@@ -3,7 +3,7 @@
 // 引入助手
 const program = require("commander");
 // 获取版本号
-const version = require("./package.json").version;
+const version = require("../package.json").version;
 const chalk = require("chalk");
 const error = chalk.bold.red;
 const warning = chalk.keyword("orange");

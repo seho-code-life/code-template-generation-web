@@ -3,7 +3,6 @@ const path = require("path");
 const commonService = require("./common");
 // util
 const { renderFileForEjs, generateFile } = require("../util/file");
-// const apiTemplate = require("../template/api/js/test.handlebars");
 const { projectPath = "/Users/seho/Desktop/纸贵/test-template" } = process.env;
 
 // 首字母大写
