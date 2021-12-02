@@ -1,0 +1,8 @@
+import <%= moduleName.capital _%> ModelApi, { I<%= moduleName.capital _%> ModelApi } from "../model/api/<%= moduleName.lowerCase _%> ModelAPI";
+
+export default class <%= moduleName.capital _%> Model {
+  public api: I<%= moduleName.capital _%> ModelApi;
+  constructor() {
+    this.api = new <%= moduleName.capital _%> ModelApi();
+  }
+}

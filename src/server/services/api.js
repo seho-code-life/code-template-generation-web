@@ -3,6 +3,7 @@ const path = require("path");
 const commonService = require("./common");
 // util
 const { renderFileForEjs, generateFile } = require("../util/file");
+const { resolve } = require("path");
 const { projectPath = "/Users/seho/Desktop/纸贵/test-template" } = process.env;
 
 // 首字母大写
@@ -10,6 +11,45 @@ const firstUpperCase = (str = "") => {
   return str.toLowerCase().replace(/( |^)[a-z]/g, (L) => L.toUpperCase());
 };
 
+// 批量生成所需要的文件，class
+const _batchGenerateFile = (result, moduleName) => {
+  return new Promise(async (resolve, reject) => {
+    // 由于files数组是同步生成的，所以生成的顺序和文件名需要和编译模板时候顺序一致
+    const paths = [
+      "/src/module/api/basicApi.ts",
+      `/src/module/${moduleName}Model.ts`,
+      `/src/module/api/${moduleName}ModelApi.ts`,
+    ];
+    for (let i = 0; i < paths.length; i++) {
+      try {
+        await generateFile(projectPath + paths[i], result[i]);
+      } catch (error) {
+        reject(error);
+      }
+    }
+  });
+};
+
+// 批量编译所需要的模板, class
+const _batchCompileTemplate = () => {
+  return new Promise(async (resolve, reject) => {
+    // 定义一个files队列
+    const files = [
+      "../template/api/ts/basicApi.ejs",
+      "../template/api/ts/model.ejs",
+      "../template/api/ts/modelApi.ejs",
+    ];
+    const result = [];
+    for (let i = 0; i < files.length; i++) {
+      try {
+        const res = await renderFileForEjs(path.resolve(__dirname, files[i]));
+        result.length === files.length ? resolve(result) : result.push(res);
+      } catch (error) {
+        reject(error);
+      }
+    }
+  });
+};
 // 模板编译成功后，写入文件的操作
 const _writeApiFile = (moduleName, generateType, str) => {
   return new Promise(async (resolve, reject) => {
@@ -23,28 +63,20 @@ const _writeApiFile = (moduleName, generateType, str) => {
         resolve();
       }
       // 如果是class类型的api文件
-      // 判断是否存在basicApi.js
-      const checkExistsResult = await commonService.checkFileExists({
-        filePath: "/src/api/basicApi.js",
-      });
-      if (!checkExistsResult) {
-        // 编译模板
-        const pullResult = await renderFileForEjs(
-          path.resolve(__dirname, `../template/api/js/basicApi.ejs`)
-        );
-        if (pullResult.success) {
-          // 编译成功之后写入此文件
-          const writeBasicFileResult = await generateFile(
-            projectPath + `/src/api/basicApi.js`,
-            pullResult.data
-          );
-          writeBasicFileResult.success
-            ? resolve()
-            : reject(writeBasicFileResult.msg);
-        }
-        reject(pullResult.msg);
-      }
-      resolve();
+      // 更新最新的basicAPI.ts，拉取需要的模板，apimodel以及实体model
+      // 批量编译模板
+      _batchCompileTemplate()
+        .then(async (compileResult) => {
+          // 批量写入模板文件
+          try {
+            await _batchGenerateFile(compileResult, moduleName);
+          } catch (error) {
+            // 写入错误
+            reject(error);
+          }
+          // 编译错误
+        })
+        .catch((error) => reject(error));
     }
     reject(writeTemplateResult.msg); // 生成失败返回的错误
   });
@@ -96,7 +128,9 @@ module.exports = {
           },
           moduleCN,
           version,
-          url: `${version === "" ? "" : "/" + version}/${moduleName.toLowerCase()}`,
+          url: `${
+            version === "" ? "" : "/" + version
+          }/${moduleName.toLowerCase()}`,
         }
       );
       if (renderTemplateResult.success) {

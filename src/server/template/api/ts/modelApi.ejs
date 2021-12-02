@@ -1,0 +1,14 @@
+import BasicApi, { IBasicApi } from "./basicApi";
+export interface I<%= moduleName.capital _%> ModelApi extends IBasicApi  {
+  
+}
+export default class <%= moduleName.capital _%> ModelApi extends BasicApi implements I<%= moduleName.capital _%> ModelApi {
+  constructor(){
+    super({
+      version: "<%= version _%>",
+      moduleName: "<%= moduleName.lowerCase _%> ",
+    });
+  }
+  /* 额外的业务api 在这里实现 */
+  
+}
